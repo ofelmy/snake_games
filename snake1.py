@@ -5,19 +5,39 @@ import random
 
 columns_number = 40
 lines_number = 25
-snake_len = 6
+snake_len = 14 
 head_snake_x = lines_number//2
 head_snake_y = snake_len
-refresh_time = 1
+refresh_time_init = 0.5
+refresh_time = refresh_time_init
 direction = "down"
 snake_list = [[head_snake_x, head_snake_y-i] for i in range(snake_len)]
-apple_probability = 0.02
-wall_probability = 0.05
+apple_probability_init = 0.08
+wall_probability_init = 0.01
 apples_list = []
 walls_list = []
 score = 0
-count = 0
+level = 0
+
+os.system("cls")
+
+with open('starting_page.txt', 'r') as f:
+    # lit le contenu du fichier et l'affiche à l'aide de print()
+    print(f.read())
+ 
 while True:
+    if keyboard.is_pressed("space"):
+        break
+
+
+while True:
+
+    if level > 0:
+        apple_probability = apple_probability_init/(level*1.1)
+        wall_probability = wall_probability_init+(level*0.01)
+    else:
+        apple_probability = apple_probability_init
+        wall_probability = wall_probability_init
     
     if direction == "down":        
         snake_list[0] = [snake_list[0][0], head_snake_y]
@@ -96,8 +116,10 @@ while True:
         score += 1
         apples_list.remove(snake_list[0])
 
+    level = score//10
+
     os.system("cls")
-    print('=== score : ' + str(score) + ' ===')
+    print('=== score : ' + str(score) + ' === level : ' + str(level) + ' ===')
 
     for i in lines_list:
         print(i)
@@ -107,23 +129,27 @@ while True:
         exit()
 
     
+    if refresh_time>0.1:
+        refresh_time = refresh_time_init-(level*0.1)
+
+    count = 0
+    while count < refresh_time:
+        if keyboard.is_pressed("escape"):
+            break
+        
+        if keyboard.is_pressed("down"):
+            direction = "down"
+        
+        if keyboard.is_pressed("left"):
+            if direction != "right":
+                direction = "left"
+        
+        if keyboard.is_pressed("right"):
+            if direction != "left":
+                direction = "right"
+        
+        time.sleep(0.1)
+        count += 0.1
 
     if keyboard.is_pressed("escape"):
         break
-    
-    if keyboard.is_pressed("down"):
-        direction = "down"
-    
-    if keyboard.is_pressed("left"):
-        if direction != "right":
-            direction = "left"
-    
-    if keyboard.is_pressed("right"):
-        if direction != "left":
-            direction = "right"
-
-    count += 1
-
-    if count%10 == 0 and refresh_time>0.1:
-        refresh_time = refresh_time-0.05
-    time.sleep(refresh_time)
